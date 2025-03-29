@@ -1,4 +1,5 @@
 import icons from 'url:../../img/icons.svg'; //parcel 2
+
 export default class Views {
   _data;
 
@@ -13,6 +14,31 @@ export default class Views {
 
   _clear() {
     this._parentElement.innerHTML = '';
+  }
+
+  update(data) {
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+
+    const newDom = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDom.querySelectorAll('*'));
+    const currElements = Array.from(this._parentElement.querySelectorAll('*'));
+
+    newElements.forEach((newEl, i) => {
+      const currEl = currElements.at(i);
+      // Updates changed Text
+      if (
+        !newEl.isEqualNode(currEl) &&
+        newEl.firstChild?.nodeValue.trim() !== ''
+      )
+        currEl.textContent = newEl.textContent;
+      // Updating changed attribues
+      if (!newEl.isEqualNode(currEl)) {
+        Array.from(newEl.attributes).forEach(attr => {
+          currEl.setAttribute(attr.name, attr.value);
+        });
+      }
+    });
   }
 
   addHandlerRender(handler) {
